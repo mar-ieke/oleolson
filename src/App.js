@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Confetti from "react-confetti";
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref } from "firebase/database";
+import { getDatabase, ref, onValue, push } from "firebase/database";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCrsuJ5CE-JKPWIJ87X7sHb-IElJf6x-qI",
@@ -14,13 +14,17 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
+console.log("Initializing Firebase...");
 const app = initializeApp(firebaseConfig);
+console.log("Firebase initialized successfully!");
 
-// Access the database module from firebase
+// Access the database reference
 const db = getDatabase(app);
 const usersRef = ref(db, "activeUsers");
 
 const App = () => {
+  console.log("Rendering App component...");
+
   const [password1, setPassword1] = useState("");
   const [password2, setPassword2] = useState("");
   const [passwords, setPasswords] = useState({ first: "test", second: "test" });
@@ -28,24 +32,31 @@ const App = () => {
   const [onlineUsers, setOnlineUsers] = useState(0);
 
   useEffect(() => {
+    console.log("Setting up useEffect...");
+
     const incrementUserCount = () => {
-      // Increment active user count in the database
+      console.log("Incrementing user count in database...");
       const newUserRef = push(usersRef);
-      set(newUserRef, true); // Set a new user entry in the database
+      console.log("New user ref:", newUserRef.key);
     };
 
     const decrementUserCount = () => {
+      console.log("Decrementing user count in database...");
       // Decrement active user count in the database
       // This will be handled when the component unmounts
       // or the user logs out
     };
 
     // Listen for changes in the activeUsers node
+    console.log("Listening for changes in activeUsers node...");
     const unsubscribe = onValue(usersRef, (snapshot) => {
+      console.log("Value changed in activeUsers node:", snapshot.val());
       if (snapshot.exists()) {
         const userCount = Object.keys(snapshot.val()).length;
+        console.log("User count:", userCount);
         setOnlineUsers(userCount);
       } else {
+        console.log("No active users.");
         setOnlineUsers(0);
       }
     });
