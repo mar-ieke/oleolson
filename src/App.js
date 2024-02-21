@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Confetti from "react-confetti";
 import { initializeApp } from "firebase/app";
-import "firebase/database";
+import { getDatabase, ref } from "firebase/database";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCrsuJ5CE-JKPWIJ87X7sHb-IElJf6x-qI",
@@ -17,8 +17,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Access the database module from firebase
-const db = getFirestore(app);
-const usersRef = db.ref("activeUsers");
+const db = getDatabase(app);
+const usersRef = ref(db, "activeUsers");
 
 const App = () => {
   const [password1, setPassword1] = useState("");
@@ -28,20 +28,35 @@ const App = () => {
   const [onlineUsers, setOnlineUsers] = useState(0);
 
   useEffect(() => {
-    // Increment active user count
-    const onConnect = usersRef.transaction(
-      (currentUsers) => (currentUsers || 0) + 1
-    );
-
-    // Decrement on disconnect or unmount
-    const onDisconnect = () => {
-      usersRef.transaction((currentUsers) => (currentUsers || 1) - 1);
+    const incrementUserCount = () => {
+      // Increment active user count in the database
+      const newUserRef = push(usersRef);
+      set(newUserRef, true); // Set a new user entry in the database
     };
-    window.addEventListener("beforeunload", onDisconnect);
 
+    const decrementUserCount = () => {
+      // Decrement active user count in the database
+      // This will be handled when the component unmounts
+      // or the user logs out
+    };
+
+    // Listen for changes in the activeUsers node
+    const unsubscribe = onValue(usersRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const userCount = Object.keys(snapshot.val()).length;
+        setOnlineUsers(userCount);
+      } else {
+        setOnlineUsers(0);
+      }
+    });
+
+    // Increment active user count
+    incrementUserCount();
+
+    // Cleanup function
     return () => {
-      onDisconnect();
-      window.removeEventListener("beforeunload", onDisconnect);
+      decrementUserCount();
+      unsubscribe();
     };
   }, []);
 
