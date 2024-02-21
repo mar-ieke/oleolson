@@ -17,7 +17,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Access the database module from firebase
-const db = app.database();
+const db = getFirestore(app);
 const usersRef = db.ref("activeUsers");
 
 const App = () => {
@@ -67,7 +67,7 @@ const App = () => {
             Nicht schlecht, ihr Flachwasserpfeifen seid wahrlich clever! Doch
             wie steht es um den Teamspirit der Crew? Piratinnen, Piraten,
             Meerjungfrauen und Wassermänner, nur wo ihr getrennt seid, werdet
-            ihr zusammen weiterkommen! {" "}
+            ihr zusammen weiterkommen!{" "}
           </p>
           <br />
           <input
@@ -90,11 +90,7 @@ const App = () => {
         <div>
           <p>{onlineUsers}</p>
           {onlineUsers >= 2 && <Confetti />}
-          {onlineUsers >= 2 && (
-            <p>
-              Luftballons können kaputt gehen...{" "}
-            </p>
-          )}
+          {onlineUsers >= 2 && <p>Luftballons können kaputt gehen... </p>}
 
           <button onClick={handleLogout}>Ausloggen</button>
         </div>
