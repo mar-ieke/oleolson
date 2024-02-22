@@ -5,7 +5,8 @@ import "firebase/compat/database"; // Import the Realtime Database service
 const firebaseConfig = {
   apiKey: "AIzaSyCrsuJ5CE-JKPWIJ87X7sHb-IElJf6x-qI",
   authDomain: "exitgame-ef689.firebaseapp.com",
-  databaseURL: "https://exitgame-ef689-default-rtdb.europe-west1.firebasedatabase.app/"
+  databaseURL:
+    "https://exitgame-ef689-default-rtdb.europe-west1.firebasedatabase.app/",
   projectId: "exitgame-ef689",
   storageBucket: "exitgame-ef689.appspot.com",
   messagingSenderId: "678409964473",
